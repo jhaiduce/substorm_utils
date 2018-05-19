@@ -98,7 +98,37 @@ def convolved_substorm_scores(signatures,signature_weights={},bandwidth=timedelt
             signature_scores.append(scores*weight)
     return np.sum(signature_scores,axis=0),tnums
 
-def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=timedelta(0,1800),bandwidth=timedelta(0,60*15),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60)):
+def search_convolution_scores(scores,threshold,require_continuous=True):
+    local_max_inds,=np.where((scores[1:-1]>scores[:-2]) & (scores[1:-1]>scores[2:]))
+    local_max_inds+=1
+
+    event_inds=[]
+
+    for i,local_max_ind in enumerate(local_max_inds):
+        if scores[local_max_ind]>threshold:
+            if require_continuous==True \
+               and len(event_inds)>0 \
+               and np.all(scores[event_inds[-1]:local_max_ind]>threshold):
+                
+                # This max and the previous one are part of a continuous period of above-threshold scores
+                
+                if scores[local_max_ind]>scores[event_inds[-1]]:
+
+                    # This max is higher than the last one so we keep it and discard the last one.
+                    event_inds[-1]=local_max_ind
+
+            else:
+                event_inds.append(local_max_ind)
+    return event_inds
+
+def find_convolution_onsets(signatures,threshold,signature_weights={},bandwidth=timedelta(0,60*15),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),require_continuous=True):
+    scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax)
+
+    onset_inds=search_convolution_scores(scores,threshold,require_continuous)
+
+    return score_tnums[onset_inds]
+
+def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=timedelta(0,1800),bandwidth=timedelta(0,60*15),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),return_times=False):
 
     scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax)
 
