@@ -64,9 +64,12 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC),datad
 
     onset_lists['AL']=get_tnums(onsets_borovsky,epoch)
 
-    plasmoid_data=dm.fromHDF5(os.path.join(datadir,'plasmoids_'+runprops['name'].replace('/','').replace(' ','_')+'.h5'))
-    plasmoid_times=np.array([datetime.strptime(s,'%Y-%m-%dT%H:%M:%S').replace(tzinfo=UTC) for s in plasmoid_data['time']])
-    
+    plasmoid_file=os.path.join(datadir,'plasmoids_'+runprops['name'].replace('/','').replace(' ','_')+'.h5')
+    if os.path.isfile(plasmoid_file):
+        plasmoid_data=dm.fromHDF5(plasmoid_file)
+        plasmoid_times=np.array([datetime.strptime(s,'%Y-%m-%dT%H:%M:%S').replace(tzinfo=UTC) for s in plasmoid_data['time']])
+    else:
+        plasmoid_times=[]
     onset_lists['plasmoids']=get_tnums(plasmoid_times,epoch)
 
     midn_distances=(3,5,7,10,)#15,20,30,40,50)
@@ -80,7 +83,11 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC),datad
     onset_lists['dipolarizations']=get_tnums(dipolarizations,epoch)
 
     namestr=runprops['name'].replace('/','').replace(' ','_')
-    onset,tmax=parse_onset_tmax(os.path.join(datadir,namestr+'_onset_tmax.txt'))
+    mpb_onset_file=os.path.join(datadir,namestr+'_onset_tmax.txt')
+    if os.path.isfile(mpb_onset_file):
+        onset,tmax=parse_onset_tmax(mpb_onset_file)
+    else:
+        onset=[]
     onset_lists['MPB']=get_tnums(onset,epoch)
 
     return onset_lists
