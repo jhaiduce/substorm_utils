@@ -1,3 +1,5 @@
+import numpy as np
+
 def interp_timeseries(data,oldtimes,newtimes):
     from scipy.interpolate import interp1d
 
