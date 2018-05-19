@@ -112,6 +112,9 @@ def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC),datadir='.'):
     onset_lists['dipolarizations']=get_tnums(dipolarizations,epoch)
 
     onsets=parse_onsets(os.path.join(datadir,'obs_mpb_onsets.txt'))
+    onsets=[onset for onset in onsets
+            if onset >= datetime(2005,1,1,tzinfo=UTC)
+            and onset < datetime(2005,2,1,tzinfo=UTC)]
     onset_lists['MPB']=get_tnums(onsets,epoch)
 
     borovsky_epdata_substorms=np.loadtxt(os.path.join(datadir,'borovsky_epdata_substorms.txt'),skiprows=1)
