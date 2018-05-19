@@ -147,8 +147,11 @@ def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=t
 
     substorm_bins=(bin_maxes>threshold)
     #substorm_times=[tmin+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
-    substorm_times=[tmin+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
-    return substorm_bins,substorm_times
+    if return_times:
+        substorm_times=[tmin+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
+        return substorm_bins,substorm_times
+    else:
+        return substorm_bins
 
 def find_substorms(signatures,threshold,signature_filters=None,mandatory_signatures=[],tstep=timedelta(0,1800),return_times=False):
 
