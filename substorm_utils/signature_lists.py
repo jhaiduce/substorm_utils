@@ -1,16 +1,16 @@
 from datetime import datetime, timedelta
 import numpy as np
-from borovsky_id_algorithm import borovsky_id_algorithm
+from substorm_utils.event_id.al_onsets import borovsky_id_algorithm
 import spacepy.datamodel as dm
 from datetime import datetime
-from find_dipolarizations import find_dipolarizations_br_bz_theta
+from substorm_utils.event_id.dipolarizations import find_dipolarizations_br_bz_theta
 from cache_decorator import cache_result
 import itertools
 try:
     from functools import lru_cache
 except ImportError:
     from backports.functools_lru_cache import lru_cache
-from mpb_parsers import parse_onset_tmax, parse_index, parse_onsets
+from substorm_utils.parsers.mpb_parsers import parse_onset_tmax, parse_index, parse_onsets
 from matplotlib.dates import num2date, date2num
 from pytz import UTC
 from timeseries import interp_timeseries
