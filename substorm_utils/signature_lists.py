@@ -53,7 +53,7 @@ def get_dipolarizations(run_name,satname,datadir='.'):
 def get_tnums(times,epoch=datetime(2005,1,1,tzinfo=UTC)):
     return np.array([(t-epoch).total_seconds() for t in times])
 
-def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC)):
+def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC),datadir='.'):
 
     onset_lists={}
 
@@ -72,7 +72,7 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC)):
     midn_distances=(3,5,7,10,)#15,20,30,40,50)
 
     dipolarizations=list(itertools.chain.from_iterable([
-        get_dipolarizations(runprops['name'],satname)
+        get_dipolarizations(runprops['name'],satname,datadir)
         for satname in ['goes10','goes12']+
         ['midn_{0:02d}'.format(distance) for distance in midn_distances]]))
     dipolarizations.sort()
@@ -85,7 +85,7 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC)):
 
     return onset_lists
 
-def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC)):
+def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC),datadir='.'):
     
     onset_lists={}
 
@@ -98,7 +98,7 @@ def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC)):
     onset_lists['AL']=get_tnums(onsets_borovsky,epoch)
 
     dipolarizations=list(itertools.chain.from_iterable([
-        get_dipolarizations('obs',satname)
+        get_dipolarizations('obs',satname,datadir)
         for satname in ['goes10','goes12']]))
     dipolarizations.sort()
 
@@ -115,7 +115,7 @@ def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC)):
 
     onset_lists['epdata']=get_tnums(borovsky_epdata_substorms,epoch)
 
-    image_fuv_substorms=np.loadtxt('substorms_2000_2005.log',skiprows=2,dtype=[('datestr','|S22'),('x',float),('y',float),('dist',float),('counts',float),('latgeo',float),('longeo',float),('latmag',float),('lonmag',float),('MLT',float)])
+    image_fuv_substorms=np.loadtxt(os.path.join(datadir,'substorms_2000_2005.log'),skiprows=2,dtype=[('datestr','|S22'),('x',float),('y',float),('dist',float),('counts',float),('latgeo',float),('longeo',float),('latmag',float),('lonmag',float),('MLT',float)])
     image_fuv_times=[datetime.strptime(datestr[4:],'%Y_%m%d_%H:%M:%S').replace(tzinfo=UTC) for datestr in image_fuv_substorms['datestr']]
     onset_lists['image']=get_tnums(image_fuv_times,epoch)
 
