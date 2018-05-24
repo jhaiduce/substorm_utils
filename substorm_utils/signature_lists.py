@@ -16,6 +16,13 @@ from pytz import UTC
 from timeseries import interp_timeseries
 import os
 
+signature_displaynames={
+    'image':'IMAGE/FUV',
+    'epdata':'LANL EP data',
+    'plasmoids':'Plasmoids',
+    'dipolarizations':'Dipolarizations'
+}
+
 @lru_cache(maxsize=10)
 @cache_result()
 def get_dipolarizations(run_name,satname,datadir='.'):
