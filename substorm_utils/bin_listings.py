@@ -121,14 +121,14 @@ def search_convolution_scores(scores,threshold,require_continuous=True):
                 event_inds.append(local_max_ind)
     return event_inds
 
-def find_convolution_onsets(signatures,threshold,signature_weights={},bandwidth=timedelta(0,60*15),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),require_continuous=True):
+def find_convolution_onsets(signatures,threshold,signature_weights={},bandwidth=timedelta(0,60*10),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),require_continuous=True):
     scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax)
 
     onset_inds=search_convolution_scores(scores,threshold,require_continuous)
 
     return score_tnums[onset_inds]
 
-def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=timedelta(0,1800),bandwidth=timedelta(0,60*15),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),return_times=False):
+def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=timedelta(0,1800),bandwidth=timedelta(0,60*10),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),return_times=False):
 
     scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax)
 
