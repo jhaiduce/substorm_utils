@@ -79,7 +79,8 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC),datad
         plasmoid_times=[]
     onset_lists['plasmoids']=get_tnums(plasmoid_times,epoch)
 
-    midn_distances=(3,5,7,10,)#15,20,30,40,50)
+    #midn_distances=(3,5,7,10,)#15,20,30,40,50)
+    midn_distances=[7]
 
     dipolarizations=list(itertools.chain.from_iterable([
         get_dipolarizations(runprops['name'],satname,datadir)
