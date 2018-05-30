@@ -242,7 +242,24 @@ def find_dipolarizations_br_bz_theta(times,br,bz,theta):
         )
         
         if thresholds_satisfied:
-            # All thresholds were satisfied, add to list
-            event_inds.append(i)
+            # Possible dipolarization onset, check for duplicates
+
+            if len(event_inds)==0 or i-event_inds[-1]>60:
+                # Too far in time to consider duplicate, keep event
+                event_inds.append(i)
+            else:
+                # Possible duplicate
+
+                # Make sure Bz peaked in between
+                max_bz_between=np.max(bz[event_inds[-1]:i])
+                max_bz_after=np.max(bz[i:i+60])
+                if (max_bz_between-bz[i])>(max_bz_after-bz[i])*0.25:
+                    # Between peak is more than 25% of what came after, add event to list
+                    event_inds.append(i)
+                else:
+                    # Candidate event is a duplicate. Take the lowest minimum theta of the two as the event onset
+                    if theta[i]<theta[event_inds[-1]]:
+                        event_inds[-1]=i
+                    
 
     return event_inds
