@@ -2,18 +2,13 @@ import numpy as np
 
 def get_counts(model_counts,obs_counts,axis=None):
 
-    true_positive=0
-    false_positive=0
-    false_negative=0
-    true_negative=0
+    model_counts=np.array(model_counts,dtype=bool)
+    obs_counts=np.array(obs_counts,dtype=bool)
 
-    model_counts=np.array(model_counts)
-    obs_counts=np.array(obs_counts)
-
-    true_positive=np.sum((model_counts>0) & (obs_counts>0),axis=axis)
-    false_positive=np.sum((model_counts>0) & np.logical_not(obs_counts>0),axis=axis)
-    true_negative=np.sum(np.logical_not(model_counts>0) & np.logical_not(obs_counts>0),axis=axis)
-    false_negative=np.sum(np.logical_not(model_counts>0) & (obs_counts>0),axis=axis)
+    true_positive=np.sum((model_counts) & (obs_counts),axis=axis)
+    false_positive=np.sum((model_counts) & np.logical_not(obs_counts),axis=axis)
+    true_negative=np.sum(np.logical_not(model_counts) & np.logical_not(obs_counts),axis=axis)
+    false_negative=np.sum(np.logical_not(model_counts) & (obs_counts),axis=axis)
     
     return true_positive,false_positive,false_negative,true_negative
 
