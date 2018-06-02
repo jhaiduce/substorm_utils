@@ -2,6 +2,13 @@ from datetime import datetime, timedelta
 import numpy as np
 from pytz import UTC
 
+def filter_onsets(substorms,onset_list,tstart=datetime(2005,1,1,tzinfo=UTC),tstep=timedelta(0,1800)):
+    onset_bins=[int((onset-tstart).total_seconds()/tstep.total_seconds()) for onset in onset_list]
+
+    onset_list_filtered=np.array(onset_list)[substorms[onset_bins]]
+                
+    return onset_list_filtered
+
 def make_grid(signatures,tstart=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),tstep=timedelta(0,1800),signature_filters=None,return_times=False):
 
     tmax_tnum=(tmax-tstart).total_seconds()
