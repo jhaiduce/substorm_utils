@@ -26,8 +26,7 @@ def rate_ci(p,n,alpha=0.05):
 
     return ci
 
-def heidke_ci(model_substorms,obs_substorms,nsamples=4000,ci=97.5,axis=None):
-
+def metric_ci(model_substorms,obs_substorms,evaluator,nsamples=4000,ci=97.5,axis=None):
     samples=[]
 
     if axis is None:
@@ -48,9 +47,13 @@ def heidke_ci(model_substorms,obs_substorms,nsamples=4000,ci=97.5,axis=None):
         model_counts_sample=np.take(model_substorms,inds,axis)
         obs_counts_sample=np.take(obs_substorms,inds,axis)
         true_positive,false_positive,false_negative,true_negative=get_counts(model_counts_sample,obs_counts_sample,axis)
-        samples.append(heidke_skill(true_positive,false_positive,false_negative,true_negative))
-
+        samples.append(evaluator(true_positive,false_positive,false_negative,true_negative))
+    
     return np.percentile(samples,100-ci,axis=0),np.percentile(samples,ci,axis=0)
+
+def heidke_ci(model_substorms,obs_substorms,nsamples=4000,ci=97.5,axis=None):
+
+    return metric_ci(model_substorms,obs_substorms,heidke_skill,nsamples,ci,axis)
 
 def heidke_skill(true_positive,false_positive,false_negative,true_negative):
     N=true_positive+false_positive+true_negative+false_negative
