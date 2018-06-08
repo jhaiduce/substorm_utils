@@ -15,6 +15,7 @@ from matplotlib.dates import num2date, date2num
 from pytz import UTC
 from timeseries import interp_timeseries
 import os
+from glob import glob
 
 signature_displaynames={
     'image':'IMAGE/FUV',
@@ -91,9 +92,9 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC),datad
     onset_lists['dipolarizations']=get_tnums(dipolarizations,epoch)
 
     namestr=runprops['name'].replace('/','').replace(' ','_')
-    mpb_onset_file=os.path.join(datadir,namestr+'_onset_tmax.txt')
-    if os.path.isfile(mpb_onset_file):
-        onset,tmax=parse_onset_tmax(mpb_onset_file)
+    mpb_onset_file=glob(os.path.join(datadir,'John Haiducek - '+namestr+'_mag_grid_lat=4?.matonset_tmax.txt'))
+    if len(mpb_onset_file)==1:
+        onset,tmax=parse_onset_tmax(mpb_onset_file[0])
     else:
         onset=[]
     onset_lists['MPB']=get_tnums(onset,epoch)
