@@ -76,6 +76,7 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC),datad
     if os.path.isfile(plasmoid_file):
         plasmoid_data=dm.fromHDF5(plasmoid_file)
         plasmoid_times=np.array([datetime.strptime(s,'%Y-%m-%dT%H:%M:%S').replace(tzinfo=UTC) for s in plasmoid_data['time']])
+        plasmoid_times=plasmoid_times[plasmoid_data['x']>-35]
     else:
         plasmoid_times=[]
     onset_lists['plasmoids']=get_tnums(plasmoid_times,epoch)
