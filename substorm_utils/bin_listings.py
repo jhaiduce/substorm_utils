@@ -9,9 +9,9 @@ def filter_onsets(substorms,onset_list,tstart=datetime(2005,1,1,tzinfo=UTC),tste
                 
     return onset_list_filtered
 
-def make_grid(signatures,tstart=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),tstep=timedelta(0,1800),signature_filters=None,return_times=False):
+def make_grid(signatures,tstart=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),tstep=timedelta(0,1800),signature_filters=None,return_times=False,epoch=datetime(2005,1,1,tzinfo=UTC)):
 
-    tmax_tnum=(tmax-tstart).total_seconds()
+    tmax_tnum=(tmax-epoch).total_seconds()
 
     tstep=tstep.total_seconds()
 
@@ -24,7 +24,7 @@ def make_grid(signatures,tstart=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005
 
     grid=np.zeros((nsigs,nsteps))
 
-    grid_tnums=np.arange(0,(tmax-tstart).total_seconds(),tstep)
+    grid_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),tstep)
 
     if return_times:
         times=np.ma.array(np.zeros((nsigs,nsteps)),mask=1)
@@ -81,9 +81,9 @@ def interval_counts(times,tmin=datetime(2005,1,1),tmax=datetime(2005,2,1),tstep=
 from cache_decorator import cache_result
 
 @cache_result(clear=False)
-def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),resolution=1./(24*60),bandwidth=15./(24*60)):
+def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),resolution=1./(24*60),bandwidth=15./(24*60),epoch=datetime(2005,1,1,tzinfo=UTC)):
 
-    out_tnums=np.arange(0,(tmax-tmin).total_seconds(),resolution.total_seconds())
+    out_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),resolution.total_seconds())
 
     out=np.zeros(out_tnums.shape)
 
@@ -94,14 +94,15 @@ def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime
 
     return out,out_tnums
 
-def convolved_substorm_scores(signatures,signature_weights={},bandwidth=timedelta(0,60*15),resolution=timedelta(0,60),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC)):
+def convolved_substorm_scores(signatures,signature_weights={},bandwidth=timedelta(0,60*15),resolution=timedelta(0,60),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),epoch=datetime(2005,1,1,tzinfo=UTC)):
     signature_scores=[]
     tnums=None
     for key in signatures.keys():
         weight=signature_weights.get(key,1)
         if weight>0:
             scores,tnums=convolve_onsets(tuple(signatures[key]),resolution=resolution,
-                                         bandwidth=bandwidth,tmin=tmin,tmax=tmax)
+                                         bandwidth=bandwidth,tmin=tmin,tmax=tmax,
+                                         epoch=epoch)
             signature_scores.append(scores*weight)
     return np.sum(signature_scores,axis=0),tnums
 
@@ -128,18 +129,18 @@ def search_convolution_scores(scores,threshold,require_continuous=True):
                 event_inds.append(local_max_ind)
     return event_inds
 
-def find_convolution_onsets(signatures,threshold,signature_weights={},bandwidth=timedelta(0,60*10),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),require_continuous=True):
-    scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax)
+def find_convolution_onsets(signatures,threshold,signature_weights={},bandwidth=timedelta(0,60*10),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),require_continuous=True,epoch=datetime(2005,1,1,tzinfo=UTC)):
+    scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax,epoch=epoch)
 
     onset_inds=search_convolution_scores(scores,threshold,require_continuous)
 
     return score_tnums[onset_inds]
 
-def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=timedelta(0,1800),bandwidth=timedelta(0,60*10),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),return_times=False):
+def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=timedelta(0,1800),bandwidth=timedelta(0,60*10),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),return_times=False,epoch=datetime(2005,1,1,tzinfo=UTC)):
 
-    scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax)
+    scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax,epoch=epoch)
 
-    bin_tnums=np.arange(0,(tmax-tmin).total_seconds(),tstep.total_seconds())
+    bin_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),tstep.total_seconds())
     split_inds=np.searchsorted(score_tnums,bin_tnums)
 
     bin_maxes=np.zeros([len(bin_tnums)])
@@ -155,17 +156,17 @@ def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=t
     substorm_bins=(bin_maxes>threshold)
     #substorm_times=[tmin+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
     if return_times:
-        substorm_times=[tmin+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
+        substorm_times=[epoch+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
         return substorm_bins,substorm_times
     else:
         return substorm_bins
 
-def find_substorms(signatures,threshold,signature_filters=None,mandatory_signatures=[],tstep=timedelta(0,1800),return_times=False):
+def find_substorms(signatures,threshold,signature_filters=None,mandatory_signatures=[],tstep=timedelta(0,1800),epoch=datetime(2005,1,1,tzinfo=UTC),return_times=False):
 
     if signature_filters is None:
         signature_filters=signatures.keys()
 
-    retvals=make_grid(signatures,signature_filters=signature_filters,tstep=tstep,return_times=return_times)
+    retvals=make_grid(signatures,signature_filters=signature_filters,tstep=tstep,return_times=return_times,epoch=epoch)
     if return_times:
         grid,times,keys=retvals
     else:
