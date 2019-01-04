@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import numpy as np
 from pytz import UTC
+from scipy.special import erf
 
 def filter_onsets(substorms,onset_list,tstart=datetime(2005,1,1,tzinfo=UTC),tstep=timedelta(0,1800)):
     onset_bins=[int((onset-tstart).total_seconds()/tstep.total_seconds()) for onset in onset_list]
@@ -91,6 +92,8 @@ def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime
 
     for tnum in onset_tnums:
         out+=np.exp(-(out_tnums-tnum)**2/2/bw_sec**2)
+
+    out=erf(out)
 
     return out,out_tnums
 
