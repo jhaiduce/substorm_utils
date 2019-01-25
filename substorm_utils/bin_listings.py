@@ -25,7 +25,7 @@ def make_grid(signatures,tstart=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005
 
     grid=np.zeros((nsigs,nsteps))
 
-    grid_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),tstep)
+    grid_tnums=np.arange((tstart-epoch).total_seconds(),(tmax-epoch).total_seconds(),tstep)
 
     if return_times:
         times=np.ma.array(np.zeros((nsigs,nsteps)),mask=1)
