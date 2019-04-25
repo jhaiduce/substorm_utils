@@ -114,15 +114,40 @@ def convolved_substorm_scores(signatures,signature_weights={},bandwidth=timedelt
 
 def search_convolution_scores(scores,threshold,require_continuous=True):
     local_max_inds,=np.where((scores[1:-1]>scores[:-2]) & (scores[1:-1]>scores[2:]))
+
+    try:
+        len(threshold)
+    except TypeError:
+        pass
+    else:
+        if len(threshold)!=len(scores):
+            raise ValueError('threshold and scores must have same length')
+
     local_max_inds+=1
 
     event_inds=[]
 
     for i,local_max_ind in enumerate(local_max_inds):
-        if scores[local_max_ind]>threshold:
+        
+        try:
+            above_threshold=(scores[local_max_ind]>threshold[local_max_ind])
+            threshold_is_scalar=False
+        except (TypeError,IndexError):
+            above_threshold=(scores[local_max_ind]>threshold)
+            threshold_is_scalar=True
+            
+        if above_threshold:
+
+            # Get threshold for this segment (scalar or sequence)
+            if threshold_is_scalar:
+                segment_threshold=threshold
+            else:
+                if len(event_inds)>0:
+                    segment_threshold=threshold[event_inds[-1]:local_max_ind]
+                
             if require_continuous==True \
                and len(event_inds)>0 \
-               and np.all(scores[event_inds[-1]:local_max_ind]>threshold):
+               and np.all(scores[event_inds[-1]:local_max_ind]>segment_threshold):
                 
                 # This max and the previous one are part of a continuous period of above-threshold scores
                 
