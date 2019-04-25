@@ -37,7 +37,16 @@ def make_convolution_figure(signatures,threshold,tstart,tend,bandwidth=timedelta
     axes.append(ax)
     ax.set_ylabel('All')
     scores,times=plot_convolution_score(signatures,ax,tstart,tend,bandwidth=bandwidth,epoch=epoch)
-    ax.axhline(threshold,color='r',alpha=0.5,linewidth=1)
+    try:
+        len(threshold)
+    except:
+        ax.axhline(threshold,color='r',alpha=0.5,linewidth=1)
+    else:
+        from matplotlib.dates import date2num
+        tstart_num=date2num(tstart)
+        mpl_dates=np.arange(len(threshold))/1440.+tstart_num
+        ax.plot(mpl_dates,threshold,color='r',alpha=0.5,linewidth=1)
+        
     ax.set_xlim(tstart,tend)
     
     labelpos=(0.98,0.94)
