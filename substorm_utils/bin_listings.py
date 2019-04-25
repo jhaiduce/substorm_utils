@@ -81,8 +81,7 @@ def interval_counts(times,tmin=datetime(2005,1,1),tmax=datetime(2005,2,1),tstep=
 
 from cache_decorator import cache_result
 
-@cache_result(clear=False)
-def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),resolution=1./(24*60),bandwidth=15./(24*60),epoch=datetime(2005,1,1,tzinfo=UTC)):
+def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),resolution=timedelta(seconds=60),bandwidth=timedelta(seconds=60*15),epoch=datetime(2005,1,1,tzinfo=UTC)):
 
     out_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),resolution.total_seconds())
 
