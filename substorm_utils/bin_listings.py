@@ -85,12 +85,16 @@ def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime
 
     out_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),resolution.total_seconds())
 
-    out=np.zeros(out_tnums.shape)
-
     bw_sec=bandwidth.total_seconds()
 
-    for tnum in onset_tnums:
-        out+=np.exp(-(out_tnums-tnum)**2/2/bw_sec**2)
+    pulses=np.zeros(out_tnums.shape)
+    pulses[:-1]=np.histogram(onset_tnums,out_tnums)[0]
+
+    m=int(bw_sec*3/resolution.total_seconds())
+    x=np.arange(-m,m)*resolution.total_seconds()
+    g=np.exp(-x**2/2/bw_sec**2)
+
+    out=np.convolve(pulses,g,mode='same')
 
     out=erf(out)
 
