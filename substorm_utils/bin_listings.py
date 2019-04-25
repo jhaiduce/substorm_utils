@@ -169,25 +169,20 @@ def find_convolution_onsets(signatures,threshold,signature_weights={},bandwidth=
 
 def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=timedelta(0,1800),bandwidth=timedelta(0,60*10),tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005,2,1,tzinfo=UTC),convolution_resolution=timedelta(0,60),return_times=False,epoch=datetime(2005,1,1,tzinfo=UTC)):
 
-    scores,score_tnums=convolved_substorm_scores(signatures,signature_weights,bandwidth,convolution_resolution,tmin=tmin,tmax=tmax,epoch=epoch)
+    score_tnums=find_convolution_onsets(signatures,threshold,signature_weights=signature_weights,bandwidth=bandwidth,convolution_resolution=convolution_resolution,tmin=tmin,tmax=tmax,epoch=epoch)
 
     bin_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),tstep.total_seconds())
     split_inds=np.searchsorted(score_tnums,bin_tnums)
 
-    bin_maxes=np.zeros([len(bin_tnums)])
-    bin_maxtimes=np.zeros([len(bin_tnums)])
+    substorm_bin_inds=np.searchsorted(bin_tnums,score_tnums)
+    substorm_bin_inds=substorm_bin_inds[(substorm_bin_inds>0) & (substorm_bin_inds<len(bin_tnums))]
 
-    for ibin,(split_scores,split_tnums) in enumerate(zip(
-            np.split(scores,split_inds[1:]),
-            np.split(score_tnums,split_inds[1:]))):
-        max_ind=np.argmax(split_scores)
-        bin_maxes[ibin]=split_scores[max_ind]
-        bin_maxtimes[ibin]=split_tnums[max_ind]
+    substorm_bins=np.zeros(len(bin_tnums),dtype=bool)
+    substorm_bins[substorm_bin_inds]=True
 
-    substorm_bins=(bin_maxes>threshold)
     #substorm_times=[tmin+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
     if return_times:
-        substorm_times=[epoch+timedelta(seconds=maxtime) for maxtime in bin_maxtimes[substorm_bins]]
+        substorm_times=[epoch+timedelta(seconds=tnum) for tnum in score_tnums]
         return substorm_bins,substorm_times
     else:
         return substorm_bins
