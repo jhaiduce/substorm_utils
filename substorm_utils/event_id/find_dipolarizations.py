@@ -165,6 +165,7 @@ def find_dipolarizations_theta(times,theta_values):
 def find_dipolarizations_br_bz_theta(times,br,bz,theta):
     minutes_from_start=(date2num(times)-date2num(times[0]))*1440
     deltas=minutes_from_start[1:]-minutes_from_start[:-1]
+
     if np.max(np.abs(deltas-1))>1e-2:
         raise ValueError('Times must be in 1-minute intervals')
 
