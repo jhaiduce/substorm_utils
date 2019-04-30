@@ -90,7 +90,7 @@ def convolve_onsets(onset_tnums,tmin=datetime(2005,1,1,tzinfo=UTC),tmax=datetime
     pulses=np.zeros(out_tnums.shape)
     pulses[:-1]=np.histogram(onset_tnums,out_tnums)[0]
 
-    m=int(bw_sec*3/resolution.total_seconds())
+    m=int(bw_sec*6/resolution.total_seconds())
     x=np.arange(-m,m)*resolution.total_seconds()
     g=np.exp(-x**2/2/bw_sec**2)
 
