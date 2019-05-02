@@ -113,7 +113,8 @@ def convolved_substorm_scores(signatures,signature_weights={},bandwidth=timedelt
     return np.sum(signature_scores,axis=0),tnums
 
 def search_convolution_scores(scores,threshold,require_continuous=True):
-    local_max_inds,=np.where((scores[1:-1]>scores[:-2]) & (scores[1:-1]>scores[2:]))
+    from scipy.signal import find_peaks
+    local_max_inds,peakprops=find_peaks(scores)
 
     try:
         len(threshold)
