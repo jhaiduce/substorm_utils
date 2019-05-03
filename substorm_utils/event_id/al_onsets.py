@@ -18,7 +18,7 @@ def borovsky_id_algorithm(al_values):
 
         # Ignore this interval if it is within 15 minutes of a previous interval
         if i>0:
-            if idescent-descent_intervals[i-1]<15: continue
+            if idescent-descent_intervals[i-1]<30: continue
 
         # Find decreases greater than 10 nT in 2 minutes
         candidate_inds=np.where((al_values[idescent:idescent+13]-al_values[idescent+2:idescent+15])>10)[0]
