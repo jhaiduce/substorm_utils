@@ -1,2 +1,6 @@
 *~
 *.pyc
+\#*\#
+build
+dist
+substorm_utils.egg-info
