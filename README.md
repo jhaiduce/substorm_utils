@@ -6,15 +6,15 @@ This has been developed and tested with python 2.7. Some changes are probably re
 
 ## Dependencies
 
-numpy
-scipy
-matplotlib
-scipy
-spacepy
-pytz
-cdaweb (https://github.com/jhaiduce/cdaweb)
-backports.functools_lru_cache
-cache_decorator (https://github.com/jhaiduce/cache_decorator)
+- numpy
+- scipy
+- matplotlib
+- scipy
+- spacepy
+- pytz
+- cdaweb (https://github.com/jhaiduce/cdaweb)
+- backports.functools_lru_cache
+- cache_decorator (https://github.com/jhaiduce/cache_decorator)
 
 ## Installation
 
