@@ -13,7 +13,16 @@ def plot_convolution_score(signatures,ax,tmin,tmax,convolution_resolution=timede
     ax.plot(times,scores)
     return scores,times
 
-def make_convolution_figure(signatures,threshold,tstart,tend,bandwidth=timedelta(minutes=10),epoch=datetime(2005,1,1,tzinfo=UTC),signature_type_labels={}):
+def plot_time_markers(ax,scores,score_times,marker_times,*args,**kwargs):
+    from matplotlib.dates import date2num, num2date
+    from scipy.interpolate import interp1d
+
+    marker_x=date2num(marker_times)
+    marker_y=interp1d(date2num(score_times),scores,bounds_error=False)(marker_x)
+    
+    return ax.plot(marker_x,marker_y,*args,**kwargs)
+
+def make_convolution_figure(signatures,threshold,tstart,tend,bandwidth=timedelta(minutes=10),epoch=datetime(2005,1,1,tzinfo=UTC),signature_type_labels={},time_markers=False):
     onsets_all=find_convolution_onsets(signatures,threshold,bandwidth=bandwidth,epoch=epoch,tmin=tstart,tmax=tend)
     onsets_all=[epoch+timedelta(0,s) for s in onsets_all]
     fig=plt.figure(figsize=[5.5,5.5])
@@ -29,7 +38,9 @@ def make_convolution_figure(signatures,threshold,tstart,tend,bandwidth=timedelta
             subplot_kwargs={}
         ax=fig.add_subplot(gs[i,0],**subplot_kwargs)
         axes.append(ax)
-        plot_convolution_score({key:signatures[key]},ax,tstart,tend,bandwidth=bandwidth,epoch=epoch)
+        scores,times=plot_convolution_score({key:signatures[key]},ax,tstart,tend,bandwidth=bandwidth,epoch=epoch)
+        signature_onsets=[epoch+timedelta(0,s) for s in signatures[key]]
+        plot_time_markers(ax,scores,times,signature_onsets,linestyle='',marker='d',markersize=2,color='k')
         ax.set_ylabel(signature_type_labels.get(key,key))
         ax.set_xlim(tstart,tend)
 
