@@ -46,7 +46,7 @@ def get_dipolarizations(run_name,satname,datadir='.'):
 
     dip_inds=find_dipolarizations_br_bz_theta(newtimes,br,bz,theta)
     night_inds=np.where((mlt<6)|(mlt>18))[0]
-    dip_inds=np.intersect1d(dip_inds,night_inds)
+    dip_inds=np.array(np.intersect1d(dip_inds,night_inds),dtype=int)
     dip_times=times[dip_inds]
 
     satdata['time']=newtimes
@@ -110,7 +110,7 @@ def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC),datadir='.'):
     obs_al=supermag_data[:,6]
 
     onsets_borovsky=borovsky_id_algorithm(obs_al)
-    onsets_borovsky=[datetime(2005,1,1,tzinfo=UTC)+timedelta(minutes=m) for m in onsets_borovsky]
+    onsets_borovsky=[datetime(2005,1,1,tzinfo=UTC)+timedelta(minutes=int(m)) for m in onsets_borovsky]
 
     onset_lists['AL']=get_tnums(onsets_borovsky,epoch)
 
@@ -131,7 +131,7 @@ def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC),datadir='.'):
     in_month=(borovsky_epdata_substorms[:,2]==2005) & (borovsky_epdata_substorms[:,3]<32)
     borovsky_epdata_substorms=borovsky_epdata_substorms[in_month]
     borovsky_epdata_substorms=((borovsky_epdata_substorms[:,3]-1)*1440).astype(int)
-    borovsky_epdata_substorms=[datetime(2005,1,1,tzinfo=UTC)+timedelta(minutes=m) for m in borovsky_epdata_substorms]
+    borovsky_epdata_substorms=[datetime(2005,1,1,tzinfo=UTC)+timedelta(minutes=int(m)) for m in borovsky_epdata_substorms]
 
     onset_lists['epdata']=get_tnums(borovsky_epdata_substorms,epoch)
 
