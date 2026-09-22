@@ -13,7 +13,7 @@ except ImportError:
 from substorm_utils.parsers.mpb_parsers import parse_onset_tmax, parse_index, parse_onsets
 from matplotlib.dates import num2date, date2num
 from pytz import UTC
-from timeseries import interp_timeseries
+from .timeseries import interp_timeseries
 import os
 from glob import glob
 
