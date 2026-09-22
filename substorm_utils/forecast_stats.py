@@ -79,10 +79,10 @@ def false_alarm_rate(true_positive,false_positive,false_negative,true_negative):
 
 def dump_stats(forecast_substorms,obs_substorms):
     true_positive,false_positive,false_negative,true_negative=get_counts(forecast_substorms,obs_substorms)
-    print true_positive,false_positive
-    print false_negative,true_negative
+    print(true_positive,false_positive)
+    print(false_negative,true_negative)
 
-    print 'Heidke skill score:',heidke_skill(float(true_positive),float(false_positive),float(false_negative),float(true_negative))
-    print 'Peirce skill score:',peirces_skill(float(true_positive),float(false_positive),float(false_negative),float(true_negative))
-    print 'Hit rate:',hit_rate(true_positive,false_positive,false_negative,true_negative)
-    print 'False alarm rate:',false_alarm_rate(true_positive,false_positive,false_negative,true_negative)
+    print('Heidke skill score:',heidke_skill(float(true_positive),float(false_positive),float(false_negative),float(true_negative)))
+    print('Peirce skill score:',peirces_skill(float(true_positive),float(false_positive),float(false_negative),float(true_negative)))
+    print('Hit rate:',hit_rate(true_positive,false_positive,false_negative,true_negative))
+    print('False alarm rate:',false_alarm_rate(true_positive,false_positive,false_negative,true_negative))

@@ -34,7 +34,7 @@ def make_grid(signatures,tstart=datetime(2005,1,1,tzinfo=UTC),tmax=datetime(2005
 
     i=0
 
-    for name,signature_tnums in signatures.iteritems():
+    for name,signature_tnums in signatures.items():
 
         if signature_filters and name not in signature_filters:
             continue

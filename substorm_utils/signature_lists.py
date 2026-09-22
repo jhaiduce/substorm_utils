@@ -68,14 +68,14 @@ def get_model_signature_lists(runprops,epoch=datetime(2005,1,1,tzinfo=UTC),datad
     auroral_inds=dm.fromHDF5(os.path.join(datadir,runprops['name'].replace('/','').replace(' ','_')+'_auroral_inds.h5'))
 
     onsets_borovsky=borovsky_id_algorithm(auroral_inds['AL'])
-    onsets_borovsky=[datetime(2005,1,1,tzinfo=UTC)+timedelta(minutes=m) for m in onsets_borovsky]
+    onsets_borovsky=[datetime(2005,1,1,tzinfo=UTC)+timedelta(minutes=int(m)) for m in onsets_borovsky]
 
     onset_lists['AL']=get_tnums(onsets_borovsky,epoch)
 
     plasmoid_file=os.path.join(datadir,'plasmoids_'+runprops['name'].replace('/','').replace(' ','_')+'.h5')
     if os.path.isfile(plasmoid_file):
         plasmoid_data=dm.fromHDF5(plasmoid_file)
-        plasmoid_times=np.array([datetime.strptime(s,'%Y-%m-%dT%H:%M:%S').replace(tzinfo=UTC) for s in plasmoid_data['time']])
+        plasmoid_times=np.array([datetime.strptime(s.decode('ascii'),'%Y-%m-%dT%H:%M:%S').replace(tzinfo=UTC) for s in plasmoid_data['time']])
         plasmoid_times=plasmoid_times[plasmoid_data['x']>-35]
     else:
         plasmoid_times=[]
@@ -136,7 +136,7 @@ def get_obs_signature_lists(epoch=datetime(2005,1,1,tzinfo=UTC),datadir='.'):
     onset_lists['epdata']=get_tnums(borovsky_epdata_substorms,epoch)
 
     image_fuv_substorms=np.loadtxt(os.path.join(datadir,'substorms_2000_2005.log'),skiprows=2,dtype=[('datestr','|S22'),('x',float),('y',float),('dist',float),('counts',float),('latgeo',float),('longeo',float),('latmag',float),('lonmag',float),('MLT',float)])
-    image_fuv_times=[datetime.strptime(datestr[4:],'%Y_%m%d_%H:%M:%S').replace(tzinfo=UTC) for datestr in image_fuv_substorms['datestr']]
+    image_fuv_times=[datetime.strptime(datestr[4:].decode('ascii'),'%Y_%m%d_%H:%M:%S').replace(tzinfo=UTC) for datestr in image_fuv_substorms['datestr']]
     onset_lists['image']=get_tnums(image_fuv_times,epoch)
 
     return onset_lists
