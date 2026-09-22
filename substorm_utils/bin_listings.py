@@ -173,7 +173,7 @@ def find_substorms_convolution(signatures,threshold,signature_weights={},tstep=t
     bin_tnums=np.arange((tmin-epoch).total_seconds(),(tmax-epoch).total_seconds(),tstep.total_seconds())
 
     if method=='convolution_onsets':
-    	substorm_tnums=find_convolution_onsets(signatures,threshold,signature_weights=signature_weights,bandwidth=bandwidth,convolution_resolution=convolution_resolution,tmin=tmin,tmax=tmax,epoch=epoch,require_continuous=require_continuous)
+        substorm_tnums=find_convolution_onsets(signatures,threshold,signature_weights=signature_weights,bandwidth=bandwidth,convolution_resolution=convolution_resolution,tmin=tmin,tmax=tmax,epoch=epoch,require_continuous=require_continuous)
 
         substorm_bin_inds=np.searchsorted(bin_tnums,substorm_tnums)
         substorm_bin_inds=substorm_bin_inds[(substorm_bin_inds>0) & (substorm_bin_inds<len(bin_tnums))]-1
