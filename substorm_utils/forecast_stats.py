@@ -83,6 +83,10 @@ def dump_stats(forecast_substorms,obs_substorms):
     print(false_negative,true_negative)
 
     print('Heidke skill score:',heidke_skill(float(true_positive),float(false_positive),float(false_negative),float(true_negative)))
-    print('Peirce skill score:',peirces_skill(float(true_positive),float(false_positive),float(false_negative),float(true_negative)))
+    try:
+        peirces_score = peirces_skill(float(true_positive),float(false_positive),float(false_negative),float(true_negative))
+    except ZeroDivisionError:
+        peirces_score = None
+    print('Peirces skill score:',peirces_score)
     print('Hit rate:',hit_rate(true_positive,false_positive,false_negative,true_negative))
     print('False alarm rate:',false_alarm_rate(true_positive,false_positive,false_negative,true_negative))
